@@ -9,6 +9,7 @@ import com.springboot.example.College.repository.TopicRepository;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
@@ -16,17 +17,29 @@ public class TopicService {
     @Autowired
     TopicRepository topicRepository;
 
+    @Autowired
+    CourseRepository courseRepository;
+
 
     public List<Topic> getAllTopics() {
         List<Topic> topics = new ArrayList<Topic>();
-                topicRepository.findAll()
-                .forEach(topics::add);
-         return topics;
+                topicRepository.findAll().stream()
+                        .forEach(topics::add);
+        List<Topic> finalTopicsList = new ArrayList<>();
+        for (Topic topic:topics
+             ) {
+            List<Course> courses = courseRepository.findByTopicId(topic.getId());
+            topic.setCourse(courses);
+            finalTopicsList.add(topic);
+        }
+         return finalTopicsList;
     }
 
 
     public Optional<Topic> getTopic(String id) {
         Optional<Topic> optionalTopic = topicRepository.findById(id);
+        List<Course> courses = courseRepository.findByTopicId(optionalTopic.get().getId());
+        optionalTopic.get().setCourse(courses);
         return optionalTopic;
     }
 
