@@ -21,7 +21,7 @@ public class Topic {
     private String name;
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     private List<Course> course;
 
     public List<Course> getCourse() {
